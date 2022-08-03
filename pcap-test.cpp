@@ -56,28 +56,54 @@ int main(int argc, char* argv[]) {
 
 		// Ethernet struct memory copy
 		if(!Ethernet_Capture(packet, &ethernet))
+			// error
 			return -1;
 
 		if(ntohs(ethernet.type) == P_IPv4)
 		{
-			// Show_Ethernet(&ethernet);
 			u_char* p = (u_char*)packet;
+			
+			// Move to Read IPv4 Data
 			p+=14;
 			if(!Ipv4_Capture(p, &ipv4))
+				// error
 				return -1;
 			
 			if(ipv4.protocol == P_TCP)
 			{
-				Show_IPv4(&ipv4);	
+				// Move to Read TCP Data
+				p+=20;
+
+				Tcp_Capture(p, &tcp);
+				// printf("%d\n",ntohs(ipv4.total_Len));
+				// printf("%d\n",(ipv4.version_IHL & 0xf) *4);
+				// printf("%d\n",((tcp.data_Reserve_Ns & 0xf0)>>4)*4);
+				// int tcp_Data_length = ntohs(ipv4.total_Len) 
+				// - ((ipv4.version_IHL & 0xf) *4) - (((tcp.data_Reserve_Ns & 0xf0)>>4)*4);
+				int tcp_Data_length = 0;
+				Cal_Data_length(&ipv4, &tcp, &tcp_Data_length);
+				Show_Ethernet(&ethernet);
+				Show_IPv4(&ipv4);
+				Show_TCP(&tcp);
+				if(tcp_Data_length == 0)
+					printf("There is No TCP Data\n");
+				else
+				{
+					p+=22;
+					p+=((tcp.data_Reserve_Ns & 0xf0)>>4)*4 - 22;
+					u_char tcp_Data[MAX_TCP_LEN];
+					if(!Data_Capture(p, tcp_Data))
+						return -1;
+					Show_Data(tcp_Data);
+				}	
 			}
 			else
 				printf("'%02x' This Protocol Not TCP\n",ipv4.protocol);
 		}
 		else
-		{
-			printf("This protocol is not IPv4");
-			continue;
-		}
+			printf("This protocol Not IPv4\n");
+			
+		printf("\n");
 	}
 
 	pcap_close(pcap);
