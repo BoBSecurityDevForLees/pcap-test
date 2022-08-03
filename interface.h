@@ -12,10 +12,15 @@ typedef struct ethernet {
 } Ethernet;
 
 typedef struct ip {
-	u_char version;
-	u_char IHL;
+	u_char version_IHL;
+	u_char Dscp_Ecn;
 	u_int16_t total_len;
-	u_int32_t souce;
+	u_int16_t identifier;
+	u_int16_t flag_offset;
+	u_char ttl;
+	u_char protocol;
+	u_int16_t checksum;
+	u_int32_t source;
 	u_int32_t destination;
 } IP;
 

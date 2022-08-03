@@ -4,6 +4,7 @@
 #include <string.h>
 #include <netinet/in.h>
 #include "interface.h"
+#include "function.h"
 
 void usage() {
 	printf("syntax: pcap-test <interface>\n");
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]) {
 
 	while (true) {
 		struct pcap_pkthdr* header;
-		const u_char* packet;
+		const u_char* packet;  //error 
 		Ethernet ethernet;
 		IP ipv4;
 		TCP tcp;
@@ -52,10 +53,26 @@ int main(int argc, char* argv[]) {
 			break;
 		}
 		printf("%u bytes captured\n", header->caplen);
+
 		// Ethernet struct memory copy
-		memcpy(&ethernet, packet, 14);
+		if(!Ethernet_Capture(packet, &ethernet))
+			return -1;
+
 		if(ntohs(ethernet.type) == P_IPv4)
-			printf("success\n");
+		{
+			// Show_Ethernet(&ethernet);
+			u_char* p = (u_char*)packet;
+			p+=14;
+			if(!Ipv4_Capture(p, &ipv4))
+				return -1;
+			
+			if(ipv4.protocol == P_TCP)
+			{
+				Show_IPv4(&ipv4);	
+			}
+			else
+				printf("'%02x' This Protocol Not TCP\n",ipv4.protocol);
+		}
 		else
 		{
 			printf("This protocol is not IPv4");
