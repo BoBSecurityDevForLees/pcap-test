@@ -71,5 +71,8 @@ bool Data_Capture(const u_char* p, u_char* d)
 
 void Show_Data(u_char* d)
 {
-	printf("Data: %s\n", d);
+	printf("Data(hex): ");
+	for(int i =0; i <10; i++)
+		printf("%02x ", d[i]);
+	printf("\nData(str): %s\n", d);
 }
