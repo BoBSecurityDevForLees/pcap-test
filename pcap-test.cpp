@@ -89,10 +89,15 @@ int main(int argc, char* argv[]) {
 					printf("There is No TCP Data\n");
 				else
 				{
-					p+=22;
-					p+=((tcp.data_Reserve_Ns & 0xf0)>>4)*4 - 22;
+					p+=((tcp.data_Reserve_Ns & 0xf0)>>4)*4;
 					u_char tcp_Data[MAX_TCP_LEN];
-					if(!Data_Capture(p, tcp_Data))
+					int size = 0;
+					if (tcp_Data_length < 10)
+						size = tcp_Data_length;
+					else
+						size = 10;
+
+					if(!Data_Capture(p, tcp_Data, size))
 						return -1;
 					Show_Data(tcp_Data);
 				}	

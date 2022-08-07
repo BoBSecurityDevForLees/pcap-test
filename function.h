@@ -59,9 +59,9 @@ void Cal_Data_length(IP* ipv4, TCP* tcp, int* res)
 	- (((tcp->data_Reserve_Ns & 0xf0)>>4)*4);
 }
 
-bool Data_Capture(const u_char* p, u_char* d)
+bool Data_Capture(const u_char* p, u_char* d, int size)
 {
-	if(memcpy(d, p, 10) == NULL)
+	if(memcpy(d, p, size) == NULL)
 	{
 		printf("Cant Memory copy");
 		return false;
