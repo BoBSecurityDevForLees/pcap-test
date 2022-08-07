@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 			u_char* p = (u_char*)packet;
 			
 			// Move to Read IPv4 Data
-			p+=14;
+			p+=sizeof(Ethernet);
 			if(!Ipv4_Capture(p, &ipv4))
 				// error
 				return -1;
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 			if(ipv4.protocol == P_TCP)
 			{
 				// Move to Read TCP Data
-				p+=20;
+				p+=sizeof(TCP);
 
 				Tcp_Capture(p, &tcp);
 				// printf("%d\n",ntohs(ipv4.total_Len));

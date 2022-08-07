@@ -33,8 +33,10 @@ bool Ipv4_Capture(const u_char* p, IP* i)
 
 void Show_IPv4(IP* ip)
 {
-    printf("Source IP Address %s\n", inet_ntoa(ip->source));
-    printf("Destination IP Address %s\n", inet_ntoa(ip->destination));
+	char buf[16];
+
+    printf("Source IP Address %s\n", inet_ntop(AF_INET,&(ip->source), buf, 16));
+    printf("Destination IP Address %s\n", inet_ntop(AF_INET,&(ip->destination), buf, 16));
 }
 
 bool Tcp_Capture(const u_char* p, TCP* t)
@@ -61,6 +63,7 @@ void Cal_Data_length(IP* ipv4, TCP* tcp, int* res)
 
 bool Data_Capture(const u_char* p, u_char* d, int size)
 {
+
 	if(memcpy(d, p, size) == NULL)
 	{
 		printf("Cant Memory copy");
